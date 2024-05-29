@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Model Viewer</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <script>
+    // Opprett scene, kamera og renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Legg til lys
+    const ambientLight = new THREE.AmbientLight(0x404040, 2); // Ambient lys
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5); // Directional lys
+    scene.add(directionalLight);
+
+    // Last inn .glb-modellen
+    const loader = new THREE.GLTFLoader();
+    loader.load('https://drive.google.com/file/d/1gDMaTMqzI6yCKox6E8ujHHOGP3h0jpHk/view?usp=sharing', function (gltf) {
+      scene.add(gltf.scene);
+      renderer.render(scene, camera);
+    }, undefined, function (error) {
+      console.error(error);
+    });
+
+    // Plasser kameraet
+    camera.position.z = 5;
+
+    // Legg til kontroller
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    // Animere scenen
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Håndtere vindusendringer (for å justere visningen)
+    window.addEventListener('resize', function() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    });
+  </script>
+</body>
+</html>
+
